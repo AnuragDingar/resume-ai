@@ -2,6 +2,7 @@ const { Router } = require('express');
 const authRouter = Router();
 const User = require('../models/user.model');
 const authController = require('../controller/auth.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -40,6 +41,6 @@ authRouter.get('/logout', authController.logoutUserController);
  * 
  */
 
-authRouter.get('/get-me', authController.getMeController);
+authRouter.get('/get-me', authMiddleware, authController.getMeController);
 
 module.exports = authRouter;

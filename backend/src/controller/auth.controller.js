@@ -113,8 +113,29 @@ async function logoutUserController(req, res) {
     res.status(200).json({ message: 'User logged out successfully' });
 }
 
+/**
+ * @name getMeController
+ * @description Controller function to get the authenticated user's information based on the provided JWT token in the Authorization header. This route is protected and requires a valid token to access.
+ * @route GET /api/auth/get-me
+ * @access Private ( requires authentication )
+ */
+
+async function getMeController(req, res) {
+    const user = await userModel.findById(req.user.id);
+    res.status(200).json({ 
+        message: 'User information retrieved successfully',
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+     });
+}
+
+
 module.exports = {
     registerUserController,
     loginUserController,
-    logoutUserController
+    logoutUserController,
+    getMeController
 }
