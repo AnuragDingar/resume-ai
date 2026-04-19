@@ -11,7 +11,8 @@ const tokenBlacklistModel = require('../models/blacklist.model');
  * @route POST /api/auth/register
  * @access Public
  */
-async function registerUserController(req, res) {  
+async function registerUserController(req, res, next) {
+    try {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
@@ -50,7 +51,9 @@ async function registerUserController(req, res) {
             email: newUser.email
         }
      });
-
+    } catch (err) {
+        next(err);
+    }
 }
 
 /**
@@ -60,7 +63,8 @@ async function registerUserController(req, res) {
  * @access Public
  */
 
-async function loginUserController(req, res) {
+async function loginUserController(req, res, next) {
+    try {
     const { email, password } = req.body;
     
     if (!email || !password) {
@@ -93,6 +97,9 @@ async function loginUserController(req, res) {
             email: user.email
         }
     });
+    } catch (err) {
+        next(err);
+    }
 }
 
 
@@ -102,7 +109,8 @@ async function loginUserController(req, res) {
  * @access Public
  */
 
-async function logoutUserController(req, res) {
+async function logoutUserController(req, res, next) {
+    try {
     const token = req.cookies.token;
     
     if (token) {
@@ -111,6 +119,9 @@ async function logoutUserController(req, res) {
     
     res.clearCookie('token');
     res.status(200).json({ message: 'User logged out successfully' });
+    } catch (err) {
+        next(err);
+    }
 }
 
 /**
@@ -120,7 +131,8 @@ async function logoutUserController(req, res) {
  * @access Private ( requires authentication )
  */
 
-async function getMeController(req, res) {
+async function getMeController(req, res, next) {
+    try {
     const user = await userModel.findById(req.user.id);
     res.status(200).json({ 
         message: 'User information retrieved successfully',
@@ -130,6 +142,9 @@ async function getMeController(req, res) {
             email: user.email
         }
      });
+    } catch (err) {
+        next(err);
+    }
 }
 
 
