@@ -1,12 +1,12 @@
 import { RouterProvider } from "react-router";
 import { router } from "./app.routes.jsx"; // add .jsx ?
+import { AuthProvider } from "./features/auth/auth.context.jsx";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Resume Builder</h1>
+    <AuthProvider>
       <RouterProvider router={router} />
-    </div>
+    </AuthProvider>
   );
 }
 

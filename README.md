@@ -84,6 +84,16 @@ All routes are prefixed with `/api/auth`.
 
 > \* Logout is public — if no token cookie is present, it simply clears the cookie and responds successfully. If a token is present, it is added to the blacklist.
 
+
+
+- axios installed
+
+
+
+
+
+
+
 ---
 
 For deeper implementation details see [details.md](./details.md).

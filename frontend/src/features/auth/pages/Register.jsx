@@ -1,12 +1,23 @@
-import React from "react";
+import React, {useState} from "react";
 import "../auth.form.scss";
+import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router";
 
 const Register = () => {
+
+  // useNavigate is a hook from react-router that allows us to programmatically navigate to different routes in our app.
   const navigate = useNavigate();
+
+  const  { handleRegister } = useAuth();
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { loading } = useAuth();
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here
+    // Handle registration logic here
+    handleRegister({ userName, email, password });
+    navigate("/"); // Redirect to home page after registration
   };
 
   return (
@@ -23,6 +34,7 @@ const Register = () => {
               id="username"
               name="username"
               placeholder="Enter your username"
+              onChange={(e) => setUserName(e.target.value)}
             />
           </div>
           <div className="input-group">
@@ -32,6 +44,7 @@ const Register = () => {
               id="email"
               name="email"
               placeholder="Enter your email address"
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="input-group">
@@ -41,6 +54,7 @@ const Register = () => {
               id="password"
               name="password"
               placeholder="Enter your password"
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 

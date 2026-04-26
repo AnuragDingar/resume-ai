@@ -103,6 +103,22 @@ Redis is the preferred solution for high-throughput scenarios; this project uses
 - `npm i react-router` added for client-side routing.
 - All page content lives inside `<main></main>` tags (e.g. `Login.jsx`).
 - `useNavigate` hook used to switch between Register and Login pages.
+- axios used
+    - in auth.api.js  we use {
+        withCredentials: true
+    }
+
+    with this server can read and write in cookies.
+
+- // Create a context for authentication. This will allow us to share auth state across the app without prop drilling.
+export const AuthContext = createContext();
+-     // This custom hook provides an easy way to access the authentication context throughout the app.
+    const context = useContext(AuthContext);
+- we created Protected component -     // This component is a wrapper for routes that require authentication. It checks if the user is authenticated and either renders the child components or redirects to the login page.
+and we add that page in this component like this -   {
+    path: "/",
+    element: <Protected><h1>Home Page</h1></Protected>,
+  },
 
 ### Frontend Architecture (4-layer)
 
