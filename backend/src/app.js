@@ -15,7 +15,10 @@ app.use(cors({
 
 // Routes
 const authRouter = require('./routes/auth.routes');
+const interviewRouter = require('./routes/interview.routes');
+
 app.use('/api/auth', authRouter);
+app.use('/api/interviews', interviewRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the API' });

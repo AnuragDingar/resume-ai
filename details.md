@@ -93,7 +93,8 @@ Redis is the preferred solution for high-throughput scenarios; this project uses
 
 - Added middleware: `jwt.verify` used to extract data from the token.
 - Install axios for HTTP requests.
-
+- install - npm i multer , used to read pdf.
+-  npm i pdf-parse - to read data inside pdf.
 ---
 
 ## Frontend Notes

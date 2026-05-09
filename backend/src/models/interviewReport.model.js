@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 /**
  * - job description schema : String
@@ -64,9 +64,10 @@ const interviewReportSchema = new mongoose.Schema({
     technicalQuestions: [technicalQuestionSchema],
     behaviouralQuestions: [behaviouralQuestionSchema],
     skillsGap: [skillGapSchema],
-    preparationPlan: [preparationPlanSchema]
+    preparationPlan: [preparationPlanSchema],
+    user : { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true } // Reference to the User model to associate the report with a specific user
 }, { timestamps: true });
 
 const interviewReportModel = mongoose.model("InterviewReport", interviewReportSchema);
 
-export default interviewReportModel;
+module.exports = interviewReportModel;

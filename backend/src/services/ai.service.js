@@ -1,8 +1,8 @@
-const { zod } = require("zod");
 const Anthropic = require("@anthropic-ai/sdk");
 const { z } = require("zod");
+const { zodToJsonSchema } = require("zod-to-json-schema");
 const { zodOutputFormat } = require("@anthropic-ai/sdk/helpers/zod");
-const { resume, jobDescription, selfDescription } = require("./temp");
+// const { resume, jobDescription, selfDescription } = require("./temp");
 const client = new Anthropic();
 
 const interviewReportSchema = z.object({
@@ -19,9 +19,7 @@ const interviewReportSchema = z.object({
           .describe("The technical question asked in the interview"),
         intension: z
           .string()
-          .describe(
-            "The reason why this question is asked in the interview",
-          ),
+          .describe("The reason why this question is asked in the interview"),
         answer: z
           .string()
           .describe("The ideal approach & answer to this question"),
@@ -38,9 +36,7 @@ const interviewReportSchema = z.object({
           .describe("The behavioural question asked in the interview"),
         intension: z
           .string()
-          .describe(
-            "The reason why this question is asked in the interview",
-          ),
+          .describe("The reason why this question is asked in the interview"),
         answer: z
           .string()
           .describe("The ideal approach & answer to this question"),
@@ -73,8 +69,6 @@ const interviewReportSchema = z.object({
     )
     .describe("The preparation plan for the candidate"),
 });
-
-
 
 async function generateInterviewReport(
   jobDescription,
@@ -110,11 +104,12 @@ async function generateInterviewReport(
     output_config: { format: zodOutputFormat(interviewReportSchema) },
   });
 
-  console.log("Generated interview report:", msg);
+  console.log("Generated interview report:", msg.content[0].input);
+  return msg.content[0].text;
 }
 
-generateInterviewReport(jobDescription, resume, selfDescription).catch(
+/* generateInterviewReport(jobDescription, resume, selfDescription).catch(
   console.error,
-);
+); */
 
 module.exports = generateInterviewReport;
