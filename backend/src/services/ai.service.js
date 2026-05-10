@@ -75,37 +75,43 @@ async function generateInterviewReport(
   resume,
   selfDescription,
 ) {
-  const msg = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 2000,
-    messages: [
-      {
-        role: "user",
-        content:
-          "Genrate an interview report for a candidate based on the following information: \n\n" +
-          "Job Description: " +
-          jobDescription +
-          "\n\n" +
-          "Resume: " +
-          resume +
-          "\n\n" +
-          "Self Description: " +
-          selfDescription +
-          "\n\n" +
-          "The report should include the following sections: \n" +
-          "1. Match Score: A score between 0 and 100 indicating how well the candidate matches the job requirements. \n" +
-          "2. Technical Questions: A list of technical questions that can be asked in the interview along with their intentions and ideal answers. \n" +
-          "3. Behavioural Questions: A list of behavioural questions that can be asked in the interview along with their intentions and ideal answers. \n" +
-          "4. Skills Gap: A list of skill gaps identified for the candidate along with their severity levels (low, medium, high). \n" +
-          "5. Preparation Plan: A day-wise preparation plan for the candidate to improve their chances of success in the interview, including specific tasks to be completed each day. \n\n" +
-          "Please provide the report in a structured format that can be easily parsed and displayed in a user-friendly manner.",
+  try {
+    const msg = await client.messages.parse({
+      model: "claude-haiku-4-5",
+      max_tokens: 10000,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Genrate an interview report for a candidate based on the following information: \n\n" +
+            "Job Description: " +
+            jobDescription +
+            "\n\n" +
+            "Resume: " +
+            resume +
+            "\n\n" +
+            "Self Description: " +
+            selfDescription +
+            "\n\n" +
+            "The report should include the following sections: \n" +
+            "1. Match Score: A score between 0 and 100 indicating how well the candidate matches the job requirements. \n" +
+            "2. Technical Questions: A list of technical questions that can be asked in the interview along with their intentions and ideal answers. \n" +
+            "3. Behavioural Questions: A list of behavioural questions that can be asked in the interview along with their intentions and ideal answers. \n" +
+            "4. Skills Gap: A list of skill gaps identified for the candidate along with their severity levels (low, medium, high). \n" +
+            "5. Preparation Plan: A day-wise preparation plan for the candidate to improve their chances of success in the interview, including specific tasks to be completed each day. \n\n" +
+            "Please provide the report in a structured format that can be easily parsed and displayed in a user-friendly manner.",
+        },
+      ],
+      output_config: {
+        format: zodOutputFormat(interviewReportSchema, "interviewReport"),
       },
-    ],
-    output_config: { format: zodOutputFormat(interviewReportSchema) },
-  });
-
-  console.log("Generated interview report:", msg.content[0].input);
-  return msg.content[0].text;
+    });
+    console.log("Generated interview report:", msg.parsed_output);
+    return msg.parsed_output;
+  } catch (error) {
+    console.error("Error generating interview report:", error);
+    throw new Error("Failed to generate interview report");
+  }
 }
 
 /* generateInterviewReport(jobDescription, resume, selfDescription).catch(

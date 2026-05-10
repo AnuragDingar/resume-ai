@@ -32,7 +32,9 @@ const generateInterviewReportController = async (req, res) => {
     let resumeContent;
 
     try {
-      resumeContent = (await new pdfParse.PDFParse(Uint8Array.from(resumeFile.buffer))).getText(); // Parse the PDF content
+      resumeContent = (
+        await new pdfParse.PDFParse(Uint8Array.from(resumeFile.buffer))
+      ).text; // Parse the PDF content
     } catch (err) {
       console.error("Error parsing resume file:", err);
       return res.status(400).json({ message: "Failed to parse resume file" });
@@ -44,7 +46,7 @@ const generateInterviewReportController = async (req, res) => {
 
     const interviewReportByAi = await generateInterviewReport(
       jobDescription,
-      resumeContent.text,
+      resumeContent,
       selfDescription,
     );
 
@@ -54,6 +56,9 @@ const generateInterviewReportController = async (req, res) => {
 
     const interviewReport = await interviewReportModel.create({
       ...interviewReportByAi,
+      jobDescription, // from req.body
+      resumeText: resumeContent, // parsed PDF text
+      selfDescription,
       user: req.user.id, // Associate the report with the authenticated user
     });
 
