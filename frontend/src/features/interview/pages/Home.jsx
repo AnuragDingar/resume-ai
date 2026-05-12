@@ -1,23 +1,38 @@
 import React from "react";
 import "../style/home.scss";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useInterview } from "../hooks/useInterview";
+import { useNavigate } from "react-router";
 
 const Home = () => {
   const [jobDescription, setJobDescription] = useState("");
-  const [resume, setResume] = useState(null);
+  const resumeInputRef = useRef(null);
+  const navigate = useNavigate();
   const [selfDescription, setSelfDescription] = useState("");
 
-  const handleSubmit = (e) => {
+  const { loading, generateReport } = useInterview();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here, such as sending the data to the backend API
-    console.log("Job Description:", jobDescription);
-    console.log("Resume:", resume);
-    console.log("Self Description:", selfDescription);
+
+    const resumeFile = resumeInputRef.current.files[0];
+
+    if (!jobDescription || !selfDescription || !resumeFile) {
+      alert("Please fill in all fields and upload your resume.");
+      return;
+    }
+
+    const data = await generateReport({
+      jobDescription,
+      selfDescription,
+      resumeFile,
+    });
+    navigate(`/interview/${data._id}`);
   };
 
   return (
     <main className="home">
-      <div className="interview-input-group" >
+      <div className="interview-input-group">
         {" "}
         <div className="left">
           <textarea
@@ -31,8 +46,17 @@ const Home = () => {
         </div>
         <div className="right">
           <div className="input-group">
-            <label className="file-label" htmlFor="resume">Upload your resume:</label>
-            <input type="file" id="resume" name="resume" accept=".pdf" onChange={(e) => setResume(e.target.files[0])} />
+            <label className="file-label" htmlFor="resume">
+              Upload your resume:
+            </label>
+            <input
+              ref={resumeInputRef}
+              type="file"
+              id="resume"
+              name="resume"
+              accept=".pdf"
+              onChange={(e) => setResume(e.target.files[0])}
+            />
           </div>
           <div className="input-group">
             <label htmlFor="selfDescription">Self Description:</label>
@@ -42,7 +66,7 @@ const Home = () => {
               placeholder="Write a brief self description here..."
               rows="10"
               value={selfDescription}
-              onChange={(e) => setSelfDescription(e.target.value)}  
+              onChange={(e) => setSelfDescription(e.target.value)}
             ></textarea>
           </div>
           <button className="submit-btn" onClick={handleSubmit}>

@@ -72,6 +72,50 @@ const generateInterviewReportController = async (req, res) => {
   }
 };
 
+
+const getInterviewReportByIdController = async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const interviewReport = await interviewReportModel.findOne({
+      _id: interviewId,
+      user: req.user.id, // Ensure the report belongs to the authenticated user
+    });
+    
+    if (!interviewReport) {
+      return res.status(404).json({ message: "Interview report not found" });
+    }
+
+    res.status(200).json({ report: interviewReport });
+  } catch (error) {
+    console.error("Error fetching interview report:", error);
+    res.status(500).json({ message: "Failed to fetch interview report" });
+  }
+};
+
+const getAllInterviewReportsController = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const interviewReports = await interviewReportModel.find({
+      user: req.user.id, // Fetch only reports belonging to the authenticated user
+    }).sort({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behaviouralQuestions -skillsGap -preparationPlan"); // Sort by most recent
+
+    res.status(200).json({ reports: interviewReports });
+  } catch (error) {
+    console.error("Error fetching interview reports:", error);
+    res.status(500).json({ message: "Failed to fetch interview reports" });
+  }
+};
+
 module.exports = {
   generateInterviewReportController,
+  getInterviewReportByIdController,
+  getAllInterviewReportsController
 };

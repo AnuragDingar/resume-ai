@@ -13,4 +13,25 @@ const upload = require('../middlewares/file.middleware'); // middleware for hand
 
 // upload after authentication as api is private and only authenticated users can upload their resume and generate interview report
 interviewRouter.post('/', authMiddleware, upload.single('resume'), interviewController.generateInterviewReportController);
+
+
+
+/**
+ * @route GET /api/interview/:interviewId
+ * @desc Get interview report by interview ID
+ * @access Private
+ */
+
+interviewRouter.get('/:interviewId', authMiddleware, interviewController.getInterviewReportByIdController);
+
+
+/** 
+ * @route GET /api/interviews
+ * @desc Get all interview reports of the authenticated user
+ * @access Private
+*/
+
+interviewRouter.get('/', authMiddleware, interviewController.getAllInterviewReportsController);
+
+
 module.exports = interviewRouter;

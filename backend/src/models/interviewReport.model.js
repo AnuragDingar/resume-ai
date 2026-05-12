@@ -65,7 +65,8 @@ const interviewReportSchema = new mongoose.Schema({
     behaviouralQuestions: [behaviouralQuestionSchema],
     skillsGap: [skillGapSchema],
     preparationPlan: [preparationPlanSchema],
-    user : { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true } // Reference to the User model to associate the report with a specific user
+    user : { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the User model to associate the report with a specific user
+    title: { type: String, required: [true, "Job title is required"] },
 }, { timestamps: true });
 
 const interviewReportModel = mongoose.model("InterviewReport", interviewReportSchema);
