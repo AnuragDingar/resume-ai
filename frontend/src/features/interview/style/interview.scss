@@ -6,6 +6,7 @@
   background-color: #161616;
   color: whitesmoke;
 }
+
 // ── Shared ────────────────────────────────────────────────
 .sidebar-label {
   font-size: 0.68rem;
@@ -13,15 +14,23 @@
   letter-spacing: 0.12em;
   color: #666;
   margin-bottom: 0.75rem;
+
   &.gap-top {
     margin-top: 2rem;
   }
 }
+
 .no-data {
   color: #555;
   font-style: italic;
   font-size: 0.9rem;
 }
+
+// ── Spinner keyframe ───────────────────────────────────────
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 // ── Left Sidebar ───────────────────────────────────────────
 .iv-sidebar {
   width: 220px;
@@ -30,12 +39,75 @@
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .download-resume-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.4rem;
+    background: none;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    font-size: 0.88rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+
+    &:hover:not(:disabled) {
+      background-color: #1e1e1e;
+      color: whitesmoke;
+      border-color: #3a3a3a;
+    }
+
+    &:disabled,
+    &.loading {
+      cursor: not-allowed;
+      opacity: 0.55;
+      border-color: #2a2a2a;
+      color: #666;
+    }
+
+    .btn-icon {
+      font-size: 0.95rem;
+      min-width: 1.1rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 0.95rem;
+      height: 0.95rem;
+      border: 2px solid #444;
+      border-top-color: #888;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+  }
+
+  .pdf-error {
+    font-size: 0.75rem;
+    color: #e1034d;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    padding: 0 0.25rem;
+  }
 }
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -50,37 +122,44 @@
   text-align: left;
   width: 100%;
   transition: background 0.15s, color 0.15s;
+
   &:hover {
     background-color: #1e1e1e;
     color: whitesmoke;
   }
+
   &.active {
     background-color: rgba(225, 3, 77, 0.12);
     color: #e1034d;
     font-weight: 600;
   }
+
   .nav-icon {
     font-size: 0.95rem;
     min-width: 1.1rem;
     text-align: center;
   }
 }
+
 // ── Main Content ───────────────────────────────────────────
 .iv-main {
   flex: 1;
   padding: 2rem 2.5rem;
   overflow-y: auto;
   border-right: 1px solid #242424;
+
   .section-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
+
     h2 {
       font-size: 1.35rem;
       font-weight: 700;
       color: whitesmoke;
     }
+
     .question-count {
       background-color: #242424;
       color: #888;
@@ -89,22 +168,26 @@
       border-radius: 999px;
     }
   }
+
   // Accordion
   .accordion-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
+
   .accordion-item {
     background-color: #1a1a1a;
     border: 1px solid #2a2a2a;
     border-radius: 0.6rem;
     overflow: hidden;
     transition: border-color 0.2s;
+
     &.expanded {
       border-color: #3a3a3a;
     }
   }
+
   .accordion-header {
     display: flex;
     align-items: center;
@@ -117,9 +200,11 @@
     cursor: pointer;
     text-align: left;
     transition: background 0.15s;
+
     &:hover {
       background-color: #212121;
     }
+
     .q-badge {
       background-color: #3d0d1a;
       color: #e1034d;
@@ -131,30 +216,36 @@
       text-align: center;
       flex-shrink: 0;
     }
+
     .q-text {
       flex: 1;
       font-size: 0.92rem;
       line-height: 1.5;
     }
+
     .chevron {
       font-size: 1.6rem;
       color: #555;
       transition: transform 0.2s;
       line-height: 1;
       flex-shrink: 0;
+
       &.open {
         transform: rotate(90deg);
       }
     }
   }
+
   .accordion-body {
     padding: 1rem 1.25rem 1.25rem 1.25rem;
     border-top: 1px solid #2a2a2a;
+
     p {
       margin-bottom: 0.75rem;
       font-size: 0.88rem;
       line-height: 1.65;
       color: #ccc;
+
       .body-label {
         color: #e1034d;
         font-weight: 600;
@@ -162,23 +253,27 @@
       }
     }
   }
+
   // Road Map
   .roadmap-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
+
   .roadmap-day {
     background-color: #1a1a1a;
     border: 1px solid #2a2a2a;
     border-radius: 0.6rem;
     overflow: hidden;
+
     .day-header {
       display: flex;
       align-items: center;
       gap: 0.75rem;
       padding: 0.75rem 1rem;
       background-color: #222;
+
       .day-badge {
         background-color: #e1034d;
         color: white;
@@ -188,19 +283,23 @@
         border-radius: 0.25rem;
         flex-shrink: 0;
       }
+
       .day-focus {
         font-size: 0.92rem;
         font-weight: 600;
         color: whitesmoke;
       }
     }
+
     .day-tasks {
       padding: 0.75rem 1rem 0.75rem 2.25rem;
+
       li {
         margin-bottom: 0.4rem;
         font-size: 0.88rem;
         color: #ccc;
         line-height: 1.5;
+
         &::marker {
           color: #e1034d;
         }
@@ -208,20 +307,24 @@
     }
   }
 }
+
 // ── Right Sidebar ──────────────────────────────────────────
 .iv-right {
   width: 260px;
   min-width: 260px;
   padding: 2rem 1.25rem;
   overflow-y: auto;
+
   .score-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 0.5rem;
+
     svg {
       margin: 0.5rem 0;
     }
+
     .score-label {
       font-size: 0.82rem;
       font-weight: 600;
@@ -229,12 +332,14 @@
       margin-top: 0.25rem;
     }
   }
+
   .skill-gaps {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     margin-top: 0.5rem;
   }
+
   .skill-badge {
     padding: 0.5rem 0.75rem;
     border-radius: 0.4rem;
@@ -244,6 +349,7 @@
     line-height: 1.4;
   }
 }
+
 // ── No Report State ────────────────────────────────────────
 .no-report {
   min-height: 100vh;
@@ -254,9 +360,75 @@
   gap: 1rem;
   background-color: #161616;
   color: whitesmoke;
-  h2 { color: #e1034d; }
+
+  h2 {
+    color: #e1034d;
+  }
+
   .back-link {
     color: whitesmoke;
     text-decoration: underline;
+  }
+}
+
+// ── PDF Generation Loading Overlay ────────────────────────
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes overlay-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.pdf-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(16, 16, 16, 0.88);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlay-fade-in 0.2s ease forwards;
+
+  .pdf-loading-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    background-color: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 1rem;
+    padding: 2.5rem 3rem;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .pdf-overlay-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid #2a2a2a;
+    border-top-color: #e1034d;
+    border-radius: 50%;
+    animation: overlay-spin 0.8s linear infinite;
+  }
+
+  .pdf-overlay-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: whitesmoke;
+    animation: pulse-text 1.8s ease-in-out infinite;
+  }
+
+  .pdf-overlay-sub {
+    font-size: 0.82rem;
+    color: #666;
+    margin-top: -0.5rem;
   }
 }

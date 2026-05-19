@@ -1,33 +1,42 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-    baseURL: "/",
-    withCredentials: true,
- });
+  baseURL: "/",
+  withCredentials: true,
+});
 
+export const generateInterviewReport = async ({
+  jobDescription,
+  selfDescription,
+  resume,
+}) => {
+  const formData = new FormData();
+  formData.append("jobDescription", jobDescription);
+  formData.append("selfDescription", selfDescription);
+  formData.append("resume", resume);
 
-export const generateInterviewReport = async ({jobDescription, selfDescription, resume}) => { 
-    const formData = new FormData();
-    formData.append("jobDescription", jobDescription);
-    formData.append("selfDescription", selfDescription);
-    formData.append("resume", resume);
+  const response = await api.post("/api/interviews", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
-    const response = await api.post("/api/interviews", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
-
-    return response.data;
+  return response.data;
 };
 
 export const getInterviewReportById = async (interviewId) => {
-    const response = await api.get(`/api/interviews/${interviewId}`);
-    return response.data;
+  const response = await api.get(`/api/interviews/${interviewId}`);
+  return response.data;
 };
 
 export const getAllInterviewReports = async () => {
-    const response = await api.get("/api/interviews");
-    return response.data;
-};  
+  const response = await api.get("/api/interviews");
+  return response.data;
+};
 
+export const generateResumePdf = async (interviewId) => {
+  const response = await api.get(`/api/interviews/${interviewId}/pdf`, {
+    responseType: "blob", // Important for handling binary data
+  });
+  return response.data; // This will be the PDF file as a Blob
+};

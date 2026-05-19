@@ -2,6 +2,7 @@ const Anthropic = require("@anthropic-ai/sdk");
 const { z } = require("zod");
 const { zodToJsonSchema } = require("zod-to-json-schema");
 const { zodOutputFormat } = require("@anthropic-ai/sdk/helpers/zod");
+const puppeteer = require("puppeteer");
 // const { resume, jobDescription, selfDescription } = require("./temp");
 const client = new Anthropic();
 
@@ -68,7 +69,11 @@ const interviewReportSchema = z.object({
       }),
     )
     .describe("The preparation plan for the candidate"),
-  title: z.string().describe("The title of the job for which the interview report is generated"),
+  title: z
+    .string()
+    .describe(
+      "The title of the job for which the interview report is generated",
+    ),
 });
 
 async function generateInterviewReport(
@@ -107,7 +112,7 @@ async function generateInterviewReport(
         format: zodOutputFormat(interviewReportSchema, "interviewReport"),
       },
     });
-    console.log("Generated interview report:", msg.parsed_output);
+    //  console.log("Generated interview report:", msg.parsed_output);
     return msg.parsed_output;
   } catch (error) {
     console.error("Error generating interview report:", error);
@@ -115,8 +120,78 @@ async function generateInterviewReport(
   }
 }
 
-/* generateInterviewReport(jobDescription, resume, selfDescription).catch(
-  console.error,
-); */
+async function generatePdfFromHtml(htmlContent) {
+  try {
+    const browser = await puppeteer.launch({
+      executablePath: "/usr/bin/chromium-browser",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      headless: true,
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+    // Saves the PDF to hn.pdf.
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
+    });
 
-module.exports = generateInterviewReport;
+    await browser.close();
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating PDF from HTML:", error);
+    throw new Error(`Failed to generate PDF from HTML: ${error.message}`);
+  }
+}
+async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+  try {
+    const resumePdf = z.object({
+      html: z
+        .string()
+        .describe(
+          "The HTML content of the resume which can be converted to PDF format",
+        ),
+    });
+
+    const prompt = `Generate version of the resume based on the following information:
+          Resume: ${resume}
+          Self Description: ${selfDescription}
+          Job Description: ${jobDescription}
+          Please provide the resume content in JSON object with a single field 'html' which contains the HTML content of the resume. The HTML should be well-structured and formatted in a way that it can be easily converted to PDF format.
+          The content of the resume should not sound like AI generated and should be as close to human-written as possible.
+          You can highlights the important sections of the resume such as skills, experience and education in a visually appealing way. Using html tags like <b>, <i>, <u>, <h1>, <h2>, <h3>, <ul>, <li> to format the content appropriately.
+          The content should be ATS friendly and should not include any information that is not present in the original resume, self description or job description.
+          It should not be vey long idealy within 2 pages when converted to PDF format.`;
+
+    const msg = await client.messages.parse({
+      model: "claude-haiku-4-5",
+      max_tokens: 10000,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      output_config: {
+        format: zodOutputFormat(resumePdf, "resumePdf"),
+      },
+    });
+
+    if (!msg.parsed_output || !msg.parsed_output.html) {
+      throw new Error("Invalid response format from AI model");
+    }
+
+    console.log("Generated resume html:", msg.parsed_output);
+
+    const pdfBuffer = await generatePdfFromHtml(msg.parsed_output.html);
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating resume PDF:", error);
+    throw new Error(`Failed to generate resume PDF: ${error.message}`);
+  }
+}
+
+module.exports = {
+  generateInterviewReport,
+  generateResumePdf,
+};

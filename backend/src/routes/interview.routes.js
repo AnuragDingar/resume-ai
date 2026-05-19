@@ -33,5 +33,13 @@ interviewRouter.get('/:interviewId', authMiddleware, interviewController.getInte
 
 interviewRouter.get('/', authMiddleware, interviewController.getAllInterviewReportsController);
 
+/**
+ * @routes GET /api/interviews/:interviewId/pdf
+ * @desc Get the PDF version of the interview report by interview ID
+ * @access Private      
+ */
+
+interviewRouter.get('/:interviewId/pdf', authMiddleware, interviewController.genrateResumePdfController);
+
 
 module.exports = interviewRouter;

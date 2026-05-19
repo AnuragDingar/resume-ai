@@ -1,5 +1,8 @@
 const pdfParse = require("pdf-parse");
-const generateInterviewReport = require("../services/ai.service"); // service for handling interview report generation logic
+const {
+  generateInterviewReport,
+  generateResumePdf,
+} = require("../services/ai.service"); // service for handling interview report generation logic
 const interviewReportModel = require("../models/interviewReport.model"); // mongoose model for interview reports
 
 const generateInterviewReportController = async (req, res) => {
@@ -72,7 +75,6 @@ const generateInterviewReportController = async (req, res) => {
   }
 };
 
-
 const getInterviewReportByIdController = async (req, res) => {
   try {
     const { interviewId } = req.params;
@@ -85,7 +87,7 @@ const getInterviewReportByIdController = async (req, res) => {
       _id: interviewId,
       user: req.user.id, // Ensure the report belongs to the authenticated user
     });
-    
+
     if (!interviewReport) {
       return res.status(404).json({ message: "Interview report not found" });
     }
@@ -103,9 +105,14 @@ const getAllInterviewReportsController = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const interviewReports = await interviewReportModel.find({
-      user: req.user.id, // Fetch only reports belonging to the authenticated user
-    }).sort({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behaviouralQuestions -skillsGap -preparationPlan"); // Sort by most recent
+    const interviewReports = await interviewReportModel
+      .find({
+        user: req.user.id, // Fetch only reports belonging to the authenticated user
+      })
+      .sort({ createdAt: -1 })
+      .select(
+        "-resume -selfDescription -jobDescription -__v -technicalQuestions -behaviouralQuestions -skillsGap -preparationPlan",
+      ); // Sort by most recent
 
     res.status(200).json({ reports: interviewReports });
   } catch (error) {
@@ -114,8 +121,38 @@ const getAllInterviewReportsController = async (req, res) => {
   }
 };
 
+const genrateResumePdfController = async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+    const interviewReport = await interviewReportModel.findById(interviewId);
+
+    if (!interviewReport) {
+      return res.status(404).json({ message: "Interview report not found" });
+    }
+
+    const { resumeText, selfDescription, jobDescription } = interviewReport;
+
+    const resumePdfBuffer = await generateResumePdf({
+      resume: resumeText,
+      selfDescription,
+      jobDescription,
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=resume_${interviewId}.pdf`,
+    ); // doubt when is this needed. It is needed when we want to send the PDF file as a response to the client. By setting this header, we inform the client that the content being sent is a PDF file, which allows the client to handle it appropriately (e.g., display it in a PDF viewer or prompt the user to download it). If we don't set this header, the client might not recognize the content as a PDF and could try to display it as plain text or in some other incorrect format.
+    res.send(resumePdfBuffer);
+  } catch (error) {
+    console.error("Error generating resume PDF:", error);
+    res.status(500).json({ message: "Failed to generate resume PDF" });
+  }
+};
+
 module.exports = {
   generateInterviewReportController,
   getInterviewReportByIdController,
-  getAllInterviewReportsController
+  getAllInterviewReportsController,
+  genrateResumePdfController,
 };

@@ -52,7 +52,7 @@ const CircularScore = ({ score }) => {
   );
 };
 const Interview = () => {
-  const { report, getReportById} = useInterview();
+  const { report, getReportById, loading, getResumePdf, pdfLoading, pdfError } = useInterview();
   const [activeSection, setActiveSection] = useState("technical");
   const [expandedIndex, setExpandedIndex] = useState(null);
   const { interviewId } = useParams();
@@ -73,7 +73,7 @@ const Interview = () => {
       </div>
     );
   }
-  
+
   const getSeverityColors = (severity) => {
     switch (severity?.toLowerCase()) {
       case "high":
@@ -131,6 +131,20 @@ const Interview = () => {
             </button>
           ))}
         </nav>
+        <div className="sidebar-footer">
+          {pdfError && <p className="pdf-error">{pdfError}</p>}
+          <button
+            className={`download-resume-btn ${pdfLoading ? "loading" : ""}`}
+            onClick={() => getResumePdf(interviewId)}
+            disabled={pdfLoading}
+            title={pdfLoading ? "Generating PDF…" : "Download Resume PDF"}
+          >
+            <span className="btn-icon">
+              {pdfLoading ? <span className="spinner" /> : "📄"}
+            </span>
+            <span>{pdfLoading ? "Generating…" : "Download Resume PDF"}</span>
+          </button>
+        </div>
       </aside>
       {/* ── Main Content ── */}
       <main className="iv-main">
@@ -202,6 +216,17 @@ const Interview = () => {
             <p className="no-data">No preparation plan available</p>
           ))}
       </main>
+      {/* ── PDF Loading Overlay ── */}
+      {pdfLoading && (
+        <div className="pdf-loading-overlay">
+          <div className="pdf-loading-card">
+            <div className="pdf-overlay-spinner" />
+            <p className="pdf-overlay-title">Generating your Resume…</p>
+            <p className="pdf-overlay-sub">This may take a few seconds. Please wait.</p>
+          </div>
+        </div>
+      )}
+
       {/* ── Right Sidebar ── */}
       <aside className="iv-right">
         <p className="sidebar-label">MATCH SCORE</p>
